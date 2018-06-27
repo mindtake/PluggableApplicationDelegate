@@ -61,7 +61,6 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
         __services.forEach { $0.applicationDidFinishLaunching?(application) }
     }
     
-    
     @available(iOS 6.0, tvOS 6.0, *)
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil) -> Bool {
         var result = false
@@ -145,18 +144,23 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
             service.application?(application, didChangeStatusBarOrientation: oldStatusBarOrientation)
         }
     }
+    
+    @available(iOS 2.0, *)
+    open func application(_ application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
+        for service in __services {
+            service.application?(application, willChangeStatusBarFrame: newStatusBarFrame)
+        }
+    }
+    
+    @available(iOS 2.0, *)
+    open func application(_ application: UIApplication, didChangeStatusBarFrame oldStatusBarFrame: CGRect) {
+        for service in __services {
+            service.application?(application, didChangeStatusBarFrame: oldStatusBarFrame)
+        }
+    }
+
+
     #endif
-    //    open func application(_ application: UIApplication, willChangeStatusBarFrame newStatusBarFrame: CGRect) {
-    //        for service in __services {
-    //            service.application?(application, willChangeStatusBarFrame: newStatusBarFrame)
-    //        }
-    //    }
-    //
-    //    open func application(_ application: UIApplication, didChangeStatusBarFrame oldStatusBarFrame: CGRect) {
-    //        for service in __services {
-    //            service.application?(application, didChangeStatusBarFrame: oldStatusBarFrame)
-    //        }
-    //    }
     
     // This callback will be made upon calling -[UIApplication registerUserNotificationSettings:]. The settings the user has granted to the application will be passed in as the second argument.
     #if os(iOS)
@@ -218,7 +222,6 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
         })
     }
     
-    
     @available(iOS, introduced: 9.0, deprecated: 10.0, message: "Use UserNotifications Framework's -[UNUserNotificationCenterDelegate didReceiveNotificationResponse:withCompletionHandler:]")
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completionHandler) -> Void? in
@@ -227,7 +230,6 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
             completionHandler()
         })
     }
-    
     
     // Called when your app has been activated by the user selecting an action from a remote notification.
     // A nil action identifier indicates the default action.
@@ -371,6 +373,19 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
             service.applicationProtectedDataDidBecomeAvailable?(application)
         }
     }
+    
+    #if os(iOS)
+    @available(iOS 6.0, *)
+    open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        var mask: UIInterfaceOrientationMask?
+        for service in __services {
+            if let sericeMask = service.application?(application, window: window) {
+                mask = serviceMask
+            }
+        }
+        return mask ?? .all
+    }
+    #endif
     
     // Applications may reject specific types of extensions based on the extension point identifier.
     // Constants representing common extension point identifiers are provided further down.
