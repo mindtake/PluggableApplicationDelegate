@@ -5,12 +5,11 @@
 //  Created by Fernando Ortiz on 2/24/17.
 //  Copyright © 2017 Fernando Martín Ortiz. All rights reserved.
 //
-
+import Foundation
 import UIKit
 import CloudKit
-
 #if os(iOS)
-import SiriKit
+import Intents
 #endif
 
 /// This is only a tagging protocol.
@@ -329,10 +328,10 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     
     #if os(iOS)
     // TODO: add tvOS
-    @available(iOS 9.0, *)
+    @available(iOS 11.0, *)
     open func application(_ application: UIApplication, handle intent: INIntent, completionHandler: @escaping (INIntentResponse) -> Swift.Void) {
         for service in __services {
-            service.application?(application: application, handle: intent, completionHandler: completionHandler)
+            service.application?(application, handle: intent, completionHandler: completionHandler)
         }
     }
     #endif
@@ -379,7 +378,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         var mask: UIInterfaceOrientationMask?
         for service in __services {
-            if let sericeMask = service.application?(application, window: window) {
+            if let serviceMask = service.application?(application, supportedInterfaceOrientationsFor: window) {
                 mask = serviceMask
             }
         }

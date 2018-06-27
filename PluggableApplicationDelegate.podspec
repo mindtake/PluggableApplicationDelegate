@@ -33,6 +33,7 @@ PluggableApplicationDelegate is an open class from which your AppDelegate needs 
   # }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  s.frameworks = 'UIKit'
+  s.ios.frameworks = 'UIKit', 'Intents'
+  s.tvos.frameworks = 'UIKit'
   # s.dependency 'AFNetworking', '~> 2.3'
 end
