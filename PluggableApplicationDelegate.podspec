@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'PluggableApplicationDelegate'
   s.version          = '1.0.1'
-  s.summary          = 'Services oriented AppDelegate in Swift 4.2.'
+  s.summary          = 'Services oriented AppDelegate in Swift.'
   s.description      = <<-DESC
 PluggableApplicationDelegate is a way of decoupling AppDelegate, by splitting it into small modules called ApplicationService.
 Each ApplicationServices shares the life cycle with AppDelegate, and becomes its observer. Whenever AppDelegate runs any life cycle method, your Application services are notified and perform some action.
@@ -23,6 +23,7 @@ PluggableApplicationDelegate is an open class from which your AppDelegate needs 
   s.source           = { :git => 'https://github.com/bitsfabrik/PluggableApplicationDelegate.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
+  s.swift_version = '5'
   s.ios.deployment_target = '8.0'
   s.tvos.deployment_target = '10.0'
 

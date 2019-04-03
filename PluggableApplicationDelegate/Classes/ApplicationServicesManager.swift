@@ -54,6 +54,32 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
         return returns
     }
     
+    @discardableResult
+    private func apply<S>(_ work: (ApplicationService, @escaping () -> Void) -> S?, completionHandler: @escaping () -> Swift.Void) -> [S] {
+        let dispatchGroup = DispatchGroup()
+        var returns: [S] = []
+        
+        for service in __services {
+            dispatchGroup.enter()
+            let returned = work(service, {
+                dispatchGroup.leave()
+            })
+            if let returned = returned {
+                returns.append(returned)
+            } else { // delegate doesn't impliment method
+                dispatchGroup.leave()
+            }
+            if returned == nil {
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            completionHandler()
+        }
+        
+        return returns
+    }
+    
     
     @available(iOS 2.0, tvOS 2.0, *)
     open func applicationDidFinishLaunching(_ application: UIApplication) {
@@ -216,7 +242,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, for notification: UILocalNotification, completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completion) -> Void? in
             service.application?(application, handleActionWithIdentifier: identifier, for: notification, completionHandler: completion)
-        }, completionHandler: { _ in
+        }, completionHandler: {
             completionHandler()
         })
     }
@@ -225,7 +251,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completionHandler) -> Void? in
             service.application?(application, handleActionWithIdentifier: identifier, forRemoteNotification: userInfo, withResponseInfo: responseInfo, completionHandler: completionHandler)
-        }, completionHandler: { _ in
+        }, completionHandler: {
             completionHandler()
         })
     }
@@ -237,7 +263,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, forRemoteNotification userInfo: [AnyHashable : Any], completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completionHandler) -> Void? in
             service.application?(application, handleActionWithIdentifier: identifier, forRemoteNotification: userInfo, completionHandler: completionHandler)
-        }, completionHandler: { _ in
+        }, completionHandler: {
             completionHandler()
         })
     }
@@ -247,7 +273,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, handleActionWithIdentifier identifier: String?, for notification: UILocalNotification, withResponseInfo responseInfo: [AnyHashable : Any], completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completionHandler) -> Void? in
             service.application?(application, handleActionWithIdentifier: identifier, for: notification, withResponseInfo: responseInfo, completionHandler: completionHandler)
-        }, completionHandler: { _ in
+        }, completionHandler: {
             completionHandler()
         })
     }
@@ -301,7 +327,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Swift.Void) {
         apply({ (service, completionHandler) -> Void? in
             service.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: completionHandler)
-        }, completionHandler: { _ in
+        }, completionHandler: {
             completionHandler()
         })
     }
