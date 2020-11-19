@@ -8,15 +8,16 @@
 import Foundation
 import UIKit
 import CloudKit
+import UserNotifications
 #if os(iOS)
 import Intents
 #endif
 
 /// This is only a tagging protocol.
 /// It doesn't add more functionalities yet.
-public protocol ApplicationService: UIApplicationDelegate {}
+public protocol ApplicationService: UIApplicationDelegate, UNUserNotificationCenterDelegate {}
 
-open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
+open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     public var window: UIWindow?
     
@@ -232,6 +233,16 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, didReceive notification: UILocalNotification) {
         for service in __services {
             service.application?(application, didReceive: notification)
+        }
+    }
+    
+    @available(iOS 10.0, watchOS 3.0, *)
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Swift.Void) {
+        apply { (service, completionHandler) -> Void? in
+            service.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler)
+        } completionHandler: { (options) in
+            var result = options.reduce(UNNotificationPresentationOptions()) { return $0.union($1) }
+            completionHandler(result)
         }
     }
     
