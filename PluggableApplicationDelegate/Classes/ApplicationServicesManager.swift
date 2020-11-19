@@ -237,12 +237,21 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate, UNU
     }
     
     @available(iOS 10.0, watchOS 3.0, *)
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Swift.Void) {
+    open func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Swift.Void) {
         apply { (service, completionHandler) -> Void? in
             service.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler)
         } completionHandler: { (options) in
             var result = options.reduce(UNNotificationPresentationOptions()) { return $0.union($1) }
             completionHandler(result)
+        }
+    }
+    
+    @available(iOS 10.0, watchOS 3.0, *)
+    open func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Swift.Void) {
+        apply { (service, completion) -> Void? in
+            service.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completion)
+        } completionHandler: {
+            completionHandler()
         }
     }
     
