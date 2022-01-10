@@ -12,10 +12,10 @@ import Foundation
 /// This is only a tagging protocol.
 /// It doesn't add more functionalities yet.
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 public protocol SceneService: UIWindowSceneDelegate {}
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, tvOS 13.0, *)
 open class PluggableSceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // /////////////////////////////////////////////////////////////////////////
