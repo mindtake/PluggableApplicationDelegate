@@ -241,7 +241,7 @@ open class PluggableApplicationDelegate: UIResponder, UIApplicationDelegate, UNU
         apply { (service, completionHandler) -> Void? in
             service.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler)
         } completionHandler: { (options) in
-            var result = options.reduce(UNNotificationPresentationOptions()) { return $0.union($1) }
+            let result = options.reduce(UNNotificationPresentationOptions()) { return $0.union($1) }
             completionHandler(result)
         }
     }
