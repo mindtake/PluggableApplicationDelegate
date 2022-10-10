@@ -79,4 +79,17 @@ open class PluggableSceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         self.__services.forEach({ $0.sceneDidEnterBackground?(scene) })
     }
+    
+    public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        self.__services.forEach({ $0.scene?(scene, openURLContexts: URLContexts) })
+    }
+    
+    
+    /// This function will be called when an Associated Domain is forwarded into the app.
+    /// - Parameters:
+    ///   - scene: The UIScene that will be used when the app reconnects
+    ///   - userActivity: The userActivity containing the webPageURL that was forwarded into the application.
+    public func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        self.__services.forEach({ $0.scene?(scene, continue: userActivity) })
+    }
 }
